@@ -68,15 +68,23 @@ class SyncLabels extends Command
 
         // Proceed with synchronisation
         $result = ['success' => 0, 'error' => 0];
+        $current = 0;
+        $total = count($modules);
         foreach ($modules as $githubSlug => $composerName) {
-            $io->text('Processing <comment>' . $composerName . '</comment>...');
+            $io->text(++$current . '/' . $total . ': Processing <comment>' . $composerName . '</comment>...');
+
+            // Set the progress bar: total is the number of label operations to make
+            $io->progressStart(array_sum(array_map('count', $labelConfig)));
+
             try {
-                $this->syncLabelsToModule($githubSlug, $labelConfig);
+                $this->syncLabelsToModule($githubSlug, $labelConfig, $io);
                 $result['success']++;
             } catch (Exception $ex) {
                 $io->error('Error updating ' . $githubSlug . ': ' . $ex->getMessage());
                 $result['error']++;
             }
+
+            $io->progressFinish();
         }
         $result['total'] = array_sum($result);
 
@@ -157,8 +165,9 @@ class SyncLabels extends Command
      *
      * @param string $githubSlug
      * @param array $labelConfig
+     * @param SymfonyStyle $io
      */
-    protected function syncLabelsToModule($githubSlug, array $labelConfig)
+    protected function syncLabelsToModule($githubSlug, array $labelConfig, SymfonyStyle $io)
     {
         $client = new Client();
         $client->authenticate(getenv('GITHUB_ACCESS_TOKEN'), null, Client::AUTH_HTTP_TOKEN);
@@ -169,6 +178,8 @@ class SyncLabels extends Command
 
         // Rename labels
         foreach ($labelConfig['rename_labels'] as $oldLabel => $newLabel) {
+            $io->progressAdvance();
+
             // Assign white as a placeholder, it'll be updated further down
             try {
                 $labelsApi->update($organisation, $repository, $oldLabel, $newLabel, 'FFFFFF');
@@ -183,6 +194,8 @@ class SyncLabels extends Command
 
         // (Create and) update colours on labels
         foreach ($labelConfig['default_labels'] as $label => $hexCode) {
+            $io->progressAdvance();
+
             try {
                 $exists = $labelsApi->show($organisation, $repository, $label);
             } catch (Exception $ex) {
@@ -203,6 +216,8 @@ class SyncLabels extends Command
 
         // Delete labels
         foreach ($labelConfig['remove_labels'] as $label) {
+            $io->progressAdvance();
+
             try {
                 $labelsApi->deleteLabel($organisation, $repository, $label);
             } catch (Exception $ex) {
