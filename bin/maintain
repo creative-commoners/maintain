@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+
+require realpath(__DIR__ . '/../vendor/autoload.php');
+
+use SilverStripe\Maintain\Command\SyncLabels;
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+
+// Command registration
+$application->add(new SyncLabelsCommand());
+
+$application->run();

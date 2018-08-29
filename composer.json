@@ -4,6 +4,7 @@
     "type": "library",
     "require": {
         "symfony/console": "^4.1",
+        "php-http/guzzle6-adapter": "^1.1",
         "knplabs/github-api": "^2.9"
     },
     "require-dev": {
@@ -16,5 +17,12 @@
             "email": "robbie@silverstripe.com"
         }
     ],
-    "minimum-stability": "dev"
+    "autoload": {
+        "psr-4": {
+            "SilverStripe\\Maintain\\": "src/",
+            "SilverStripe\\Maintain\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
