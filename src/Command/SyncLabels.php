@@ -184,7 +184,7 @@ class SyncLabels extends Command
             try {
                 $labelsApi->update($organisation, $repository, $oldLabel, $newLabel, 'FFFFFF');
             } catch (Exception $ex) {
-                if (strpos($ex, 'Not Found') !== false) {
+                if (strpos($ex->getMessage(), 'Not Found') !== false) {
                     // noop, if the label doesn't exist we should ignore it
                     continue;
                 }
@@ -221,7 +221,7 @@ class SyncLabels extends Command
             try {
                 $labelsApi->deleteLabel($organisation, $repository, $label);
             } catch (Exception $ex) {
-                if (strpos($ex, 'Not Found') !== false) {
+                if (strpos($ex->getMessage(), 'Not Found') !== false) {
                     // noop, if the label doesn't exist we should ignore it
                     continue;
                 }
