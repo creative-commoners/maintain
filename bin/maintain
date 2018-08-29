@@ -4,6 +4,7 @@
 require realpath(__DIR__ . '/../vendor/autoload.php');
 
 use SilverStripe\Maintain\Command\SyncLabels;
+use SilverStripe\Maintain\Filter\SupportedModuleFilter;
 use SilverStripe\Maintain\Loader\SupportedModuleLoader;
 use SilverStripe\Maintain\Loader\TemplateLoader;
 use Symfony\Component\Console\Application;
@@ -14,7 +15,8 @@ define('MAINTAIN_BASE_DIR', dirname(__DIR__));
 $application = new Application();
 
 // Dependencies
-$moduleLoader = SupportedModuleLoader::instance();
+$moduleLoader = SupportedModuleLoader::instance()
+    ->setFilter(new SupportedModuleFilter());
 $templateLoader = TemplateLoader::instance();
 
 // Command registration

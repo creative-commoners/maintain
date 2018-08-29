@@ -2,10 +2,16 @@
 
 namespace SilverStripe\Maintain\Loader;
 
+use SilverStripe\Maintain\FilterInterface;
 use SilverStripe\Maintain\Loader;
 
 class SupportedModuleLoader extends Loader
 {
+    /**
+     * @var FilterInterface
+     */
+    protected $filter;
+
     /**
      * The URL to retrieve the JSON data for supported modules
      *
@@ -22,9 +28,10 @@ class SupportedModuleLoader extends Loader
     public function getModules() : array
     {
         $data = $this->getModuleData();
-        $modules = json_decode($data, true);
-        if (!$modules) {
-            return [];
+        $modules = json_decode($data, true) ?: [];
+
+        if ($this->getFilter()) {
+            $modules = $this->getFilter()->filter($modules);
         }
 
         return array_column($modules, 'github', 'composer');
@@ -55,5 +62,23 @@ class SupportedModuleLoader extends Loader
     public function getDataUrl() : string
     {
         return $this->dataUrl;
+    }
+
+    /**
+     * @param FilterInterface $filter
+     * @return $this
+     */
+    public function setFilter(FilterInterface $filter) : self
+    {
+        $this->filter = $filter;
+        return $this;
+    }
+
+    /**
+     * @return FilterInterface
+     */
+    public function getFilter() : FilterInterface
+    {
+        return $this->filter;
     }
 }
