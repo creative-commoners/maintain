@@ -12,6 +12,11 @@ class SupportedModuleFilter implements FilterInterface
     const TYPE_SUPPORTED_MODULE = 'supported-module';
 
     /**
+     * @var string
+     */
+    const TYPE_SUPPORTED_DEPENDENCY = 'supported-dependency';
+
+    /**
      * Filters an array of modules by "supported-module" types
      *
      * @param array $input
