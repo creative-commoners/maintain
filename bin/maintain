@@ -4,8 +4,8 @@
 require realpath(__DIR__ . '/../vendor/autoload.php');
 
 use SilverStripe\Maintain\Command\SyncLabels;
-use SilverStripe\Maintain\Utility\SupportedModuleLoader;
-use SilverStripe\Maintain\Utility\TemplateLoader;
+use SilverStripe\Maintain\Loader\SupportedModuleLoader;
+use SilverStripe\Maintain\Loader\TemplateLoader;
 use Symfony\Component\Console\Application;
 
 // Provide a base dir constant for referencing relative file paths

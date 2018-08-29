@@ -1,11 +1,11 @@
 <?php
 
-namespace SilverStripe\Maintain\Utility;
+namespace SilverStripe\Maintain\Loader;
 
+use SilverStripe\Maintain\Loader;
 use const MAINTAIN_BASE_DIR;
-use SilverStripe\Maintain\Utility;
 
-class TemplateLoader extends Utility
+class TemplateLoader extends Loader
 {
     /**
      * @var string

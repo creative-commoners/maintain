@@ -2,17 +2,14 @@
 
 namespace SilverStripe\Maintain\Command;
 
-use function array_combine;
 use Exception;
 use Github\Api\Issue\Labels;
 use Github\Client;
-use SilverStripe\Maintain\Utility\SupportedModuleLoader;
-use SilverStripe\Maintain\Utility\TemplateLoader;
+use SilverStripe\Maintain\Loader\SupportedModuleLoader;
+use SilverStripe\Maintain\Loader\TemplateLoader;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use UnexpectedValueException;
 
@@ -30,6 +27,7 @@ class SyncLabels extends Command
 
     /**
      * @param SupportedModuleLoader $moduleLoader
+     * @param TemplateLoader $templateLoader
      */
     public function __construct(SupportedModuleLoader $supportedModuleLoader, TemplateLoader $templateLoader)
     {

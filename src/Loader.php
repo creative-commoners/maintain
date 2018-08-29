@@ -5,19 +5,19 @@ namespace SilverStripe\Maintain;
 /**
  * Provides a base class for any utility classes, including things like singleton accessors
  */
-abstract class Utility
+abstract class Loader
 {
     /**
-     * @var Utility[]
+     * @var Loader[]
      */
     protected static $instances = [];
 
     /**
      * Get a singleton instance
      *
-     * @return self
+     * @return static
      */
-    public static function instance() : self
+    public static function instance()
     {
         $class = get_called_class();
 

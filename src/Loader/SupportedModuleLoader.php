@@ -1,10 +1,10 @@
 <?php
 
-namespace SilverStripe\Maintain\Utility;
+namespace SilverStripe\Maintain\Loader;
 
-use SilverStripe\Maintain\Utility;
+use SilverStripe\Maintain\Loader;
 
-class SupportedModuleLoader extends Utility
+class SupportedModuleLoader extends Loader
 {
     /**
      * The URL to retrieve the JSON data for supported modules
