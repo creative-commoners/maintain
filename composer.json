@@ -1,0 +1,20 @@
+{
+    "name": "silverstripe/maintain",
+    "description": "A CLI tool to help with maintaining SilverStripe modules",
+    "type": "library",
+    "require": {
+        "symfony/console": "^4.1",
+        "knplabs/github-api": "^2.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.3"
+    },
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Robbie Averill",
+            "email": "robbie@silverstripe.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
