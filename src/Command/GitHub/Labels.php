@@ -1,10 +1,10 @@
 <?php
 
-namespace SilverStripe\Maintain\Command;
+namespace SilverStripe\Maintain\Command\GitHub;
 
 use Exception;
-use Github\Api\Issue\Labels;
-use Github\Client;
+use Github\Api\Issue\Labels as LabelsApi;
+use SilverStripe\Maintain\Api\GitHub;
 use SilverStripe\Maintain\Loader\SupportedModuleLoader;
 use SilverStripe\Maintain\Loader\TemplateLoader;
 use Symfony\Component\Console\Command\Command;
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use UnexpectedValueException;
 
-class SyncLabels extends Command
+class Labels extends Command
 {
     /**
      * @var SupportedModuleLoader
@@ -26,38 +26,37 @@ class SyncLabels extends Command
     protected $templateLoader;
 
     /**
-     * @var Client
+     * @var GitHub
      */
-    protected $client;
+    protected $github;
 
     /**
      * @param SupportedModuleLoader $moduleLoader
      * @param TemplateLoader $templateLoader
+     * @param GitHub $github
      */
-    public function __construct(SupportedModuleLoader $supportedModuleLoader, TemplateLoader $templateLoader)
-    {
+    public function __construct(
+        SupportedModuleLoader $supportedModuleLoader,
+        TemplateLoader $templateLoader,
+        GitHub $github
+    ) {
         parent::__construct();
 
         $this->supportedModuleLoader = $supportedModuleLoader;
         $this->templateLoader = $templateLoader;
+        $this->github = $github;
     }
 
     protected function configure()
     {
         $this
-            ->setName('sync:labels')
+            ->setName('github:labels')
             ->setDescription('Syncs GitHub labels to all supported modules');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-
-        // Validate GitHub token
-        if (!getenv('GITHUB_ACCESS_TOKEN')) {
-            $io->error('GITHUB_ACCESS_TOKEN is not available in the environment!');
-            return;
-        }
 
         // Loading data and confirming steps with user
         $io->section('Loading supported modules');
@@ -174,8 +173,8 @@ class SyncLabels extends Command
      */
     protected function syncLabelsToModule($githubSlug, array $labelConfig, SymfonyStyle $io)
     {
-        /** @var Labels $labelsApi */
-        $labelsApi = $this->getClient()->api('issue')->labels();
+        /** @var LabelsApi $labelsApi */
+        $labelsApi = $this->github->getClient()->api('issue')->labels();
 
         list ($organisation, $repository) = explode('/', $githubSlug);
 
@@ -229,17 +228,5 @@ class SyncLabels extends Command
                 }
             }
         }
-    }
-
-    /**
-     * @return Client
-     */
-    protected function getClient()
-    {
-        if (!$this->client) {
-            $this->client = new Client();
-            $this->client->authenticate(getenv('GITHUB_ACCESS_TOKEN'), null, Client::AUTH_HTTP_TOKEN);
-        }
-        return $this->client;
     }
 }

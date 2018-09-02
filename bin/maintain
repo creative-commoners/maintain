@@ -3,7 +3,9 @@
 
 require realpath(__DIR__ . '/../vendor/autoload.php');
 
-use SilverStripe\Maintain\Command\SyncLabels;
+use SilverStripe\Maintain\Api\GitHub;
+use SilverStripe\Maintain\Command\GitHub\Labels;
+use SilverStripe\Maintain\Command\GitHub\RateLimit;
 use SilverStripe\Maintain\Filter\SupportedModuleFilter;
 use SilverStripe\Maintain\Loader\SupportedModuleLoader;
 use SilverStripe\Maintain\Loader\TemplateLoader;
@@ -18,8 +20,10 @@ $application = new Application();
 $moduleLoader = SupportedModuleLoader::instance()
     ->setFilter(new SupportedModuleFilter());
 $templateLoader = TemplateLoader::instance();
+$github = new GitHub();
 
 // Command registration
-$application->add(new SyncLabels($moduleLoader, $templateLoader));
+$application->add(new Labels($moduleLoader, $templateLoader, $github));
+$application->add(new RateLimit($github));
 
 $application->run();
