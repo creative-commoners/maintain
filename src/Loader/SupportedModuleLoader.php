@@ -34,7 +34,7 @@ class SupportedModuleLoader extends Loader
             $modules = $this->getFilter()->filter($modules);
         }
 
-        return array_column($modules, 'github', 'composer');
+        return array_column($modules, 'github');
     }
 
     /**

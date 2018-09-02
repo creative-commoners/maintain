@@ -27,10 +27,10 @@
   "rename_labels": {
     "bug": "type/bug",
     "critical": "impact/critical",
-    "enhancement": "type/enhancement",
-    "good first issue": "effort/easy"
+    "enhancement": "type/enhancement"
   },
   "remove_labels": [
+    "good first issue",
     "wontfix",
     "question",
     "invalid",

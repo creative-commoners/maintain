@@ -26,6 +26,11 @@ class SyncLabels extends Command
     protected $templateLoader;
 
     /**
+     * @var Client
+     */
+    protected $client;
+
+    /**
      * @param SupportedModuleLoader $moduleLoader
      * @param TemplateLoader $templateLoader
      */
@@ -70,8 +75,8 @@ class SyncLabels extends Command
         $result = ['success' => 0, 'error' => 0];
         $current = 0;
         $total = count($modules);
-        foreach ($modules as $githubSlug => $composerName) {
-            $io->text(++$current . '/' . $total . ': Processing <comment>' . $composerName . '</comment>...');
+        foreach ($modules as $githubSlug) {
+            $io->text(++$current . '/' . $total . ': Processing <comment>' . $githubSlug . '</comment>...');
 
             // Set the progress bar: total is the number of label operations to make
             $io->progressStart(array_sum(array_map('count', $labelConfig)));
@@ -103,10 +108,10 @@ class SyncLabels extends Command
     {
         // Show summary table
         $rows = [];
-        foreach ($modules as $github => $composer) {
-            $rows[] = [$github, $composer];
+        foreach ($modules as $github) {
+            $rows[] = [$github];
         }
-        $io->table(['GitHub', 'Module name'], $rows);
+        $io->table(['GitHub repo'], $rows);
 
         return $io->confirm('Continue with sync?', true);
     }
@@ -169,10 +174,8 @@ class SyncLabels extends Command
      */
     protected function syncLabelsToModule($githubSlug, array $labelConfig, SymfonyStyle $io)
     {
-        $client = new Client();
-        $client->authenticate(getenv('GITHUB_ACCESS_TOKEN'), null, Client::AUTH_HTTP_TOKEN);
         /** @var Labels $labelsApi */
-        $labelsApi = $client->api('issue')->labels();
+        $labelsApi = $this->getClient()->api('issue')->labels();
 
         list ($organisation, $repository) = explode('/', $githubSlug);
 
@@ -184,11 +187,10 @@ class SyncLabels extends Command
             try {
                 $labelsApi->update($organisation, $repository, $oldLabel, $newLabel, 'FFFFFF');
             } catch (Exception $ex) {
-                if (strpos($ex->getMessage(), 'Not Found') !== false) {
-                    // noop, if the label doesn't exist we should ignore it
-                    continue;
+                if (strpos($ex->getMessage(), 'Not Found') === false) {
+                    // Only log messages that aren't "Not Found", which come when the labels don't exist
+                    $io->error($ex->getMessage());
                 }
-                throw $ex;
             }
         }
 
@@ -221,12 +223,23 @@ class SyncLabels extends Command
             try {
                 $labelsApi->deleteLabel($organisation, $repository, $label);
             } catch (Exception $ex) {
-                if (strpos($ex->getMessage(), 'Not Found') !== false) {
-                    // noop, if the label doesn't exist we should ignore it
-                    continue;
+                if (strpos($ex->getMessage(), 'Not Found') === false) {
+                    // Only log messages that aren't "Not Found", which come when the labels don't exist
+                    $io->error($ex->getMessage());
                 }
-                throw $ex;
             }
         }
+    }
+
+    /**
+     * @return Client
+     */
+    protected function getClient()
+    {
+        if (!$this->client) {
+            $this->client = new Client();
+            $this->client->authenticate(getenv('GITHUB_ACCESS_TOKEN'), null, Client::AUTH_HTTP_TOKEN);
+        }
+        return $this->client;
     }
 }
